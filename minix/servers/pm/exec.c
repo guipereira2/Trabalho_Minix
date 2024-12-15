@@ -50,7 +50,7 @@ int do_exec(void)
     name_buffer[PATH_MAX - 1] = '\0';
 
     /* Imprimir o nome do programa que será executado */
-    printf("Executando: %s\n", name_buffer);
+    printf("(Equipe 6) Executando: %s\n", name_buffer);
 
     /* Configurar a mensagem para encaminhar ao VFS */
     memset(&m, 0, sizeof(m));
