@@ -34,27 +34,39 @@
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int
-do_exec(void)
+int do_exec(void)
 {
-	message m;
+    message m;
+    char name_buffer[PATH_MAX]; /* Buffer para armazenar o nome do executável */
 
-	printf("(Equipe 6) Executando: %s\n", m_in.m_lc_pm_exec.name);
+    /* Copiar o nome do programa do espaço do usuário para o buffer local */
+    if (sys_datacopy(who_e, (vir_bytes)m_in.m_lc_pm_exec.name,
+                     SELF, (vir_bytes)name_buffer, PATH_MAX) != OK) {
+        printf("Erro ao copiar o nome do programa.\n");
+        return EFAULT; /* Retorna erro caso a cópia falhe */
+    }
 
-	/* Forward call to VFS */
-	memset(&m, 0, sizeof(m));
-	m.m_type = VFS_PM_EXEC;
-	m.VFS_PM_ENDPT = mp->mp_endpoint;
-	m.VFS_PM_PATH = (void *)m_in.m_lc_pm_exec.name;
-	m.VFS_PM_PATH_LEN = m_in.m_lc_pm_exec.namelen;
-	m.VFS_PM_FRAME = (void *)m_in.m_lc_pm_exec.frame;
-	m.VFS_PM_FRAME_LEN = m_in.m_lc_pm_exec.framelen;
-	m.VFS_PM_PS_STR = m_in.m_lc_pm_exec.ps_str;
+    /* Garantir que o buffer termina com '\0' para evitar problemas */
+    name_buffer[PATH_MAX - 1] = '\0';
 
-	tell_vfs(mp, &m);
+    /* Imprimir o nome do programa que será executado */
+    printf("Executando: %s\n", name_buffer);
 
-	/* Do not reply */
-	return SUSPEND;
+    /* Configurar a mensagem para encaminhar ao VFS */
+    memset(&m, 0, sizeof(m));
+    m.m_type = VFS_PM_EXEC;
+    m.VFS_PM_ENDPT = mp->mp_endpoint;
+    m.VFS_PM_PATH = (void *)m_in.m_lc_pm_exec.name;
+    m.VFS_PM_PATH_LEN = m_in.m_lc_pm_exec.namelen;
+    m.VFS_PM_FRAME = (void *)m_in.m_lc_pm_exec.frame;
+    m.VFS_PM_FRAME_LEN = m_in.m_lc_pm_exec.framelen;
+    m.VFS_PM_PS_STR = m_in.m_lc_pm_exec.ps_str;
+
+    /* Encaminhar a chamada para o VFS */
+    tell_vfs(mp, &m);
+
+    /* Não responder diretamente */
+    return SUSPEND;
 }
 
 
