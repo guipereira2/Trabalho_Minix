@@ -39,6 +39,8 @@ do_exec(void)
 {
 	message m;
 
+	printf("(Equipe 6) Executando: %s\n", m_in.m_lc_pm_exec.name);
+
 	/* Forward call to VFS */
 	memset(&m, 0, sizeof(m));
 	m.m_type = VFS_PM_EXEC;
