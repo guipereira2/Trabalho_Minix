@@ -296,6 +296,18 @@ int do_nice(message *m_ptr)
  *===========================================================================*/
 static int schedule_process(struct schedproc * rmp, unsigned flags)
 {
+	/* Implementação do SJN com tempo máximo de espera */
+    struct proc *selected = pick_proc();
+    
+    if (selected != NULL) {
+        if (selected->waiting_time > MAX_WAIT_TIME) {
+            /* Se o processo esperar por muito tempo, ele será executado mesmo que não seja o mais curto */
+            run_process(selected);
+        } else {
+            run_process(selected);
+        }
+    }
+
 	int err;
 	int new_prio, new_quantum, new_cpu, niced;
 
