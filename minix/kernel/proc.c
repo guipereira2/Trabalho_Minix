@@ -1786,10 +1786,10 @@ static struct proc * pick_proc(void)
 {
 	struct proc *p, *selected = NULL;
 
-    /* Percorre a lista de processos para encontrar o de chegada mais antiga */
+    /* Percorre a lista de processos para encontrar o de menor burst_time */
     for (p = proc_head; p != NULL; p = p->next) {
         if (p->p_rts_flags == 0) { // Processo está pronto
-            if (selected == NULL || p->arrival_time < selected->arrival_time) {
+            if (selected == NULL || p->burst_time < selected->burst_time) {
                 selected = p;
             }
         }
